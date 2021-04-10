@@ -22,7 +22,7 @@ class Kanban extends Component {
           columns: columns,
           columnsToTasks: columnsToTasks,
           taskName: "",
-          priority: 0,
+          priority: "0",
           date: ""
         };
     }
@@ -64,8 +64,11 @@ class Kanban extends Component {
     }
   
     addTask(event) {
+      const { taskName, priority, date } = this.state;
+      if (taskName === "" || priority === "" || date === "")
+        return;
       let newState = this.state;
-      let newTask = {id:uuidv4(), title:this.state.taskName, priority:this.state.priority, dueDate: this.state.date};
+      let newTask = {id:uuidv4(), title: taskName, priority: priority, dueDate: date};
       newState.columnsToTasks[this.state.columns[0]].push(newTask);
       this.setState(newState);
       event.preventDefault();
@@ -150,7 +153,7 @@ const boxTarget = {
   
   class KanbanItem extends React.Component {
     render() {
-      return this.props.connectDragSource(<div class ="h-1/6 mb-6">{this.props.children}</div>);
+      return this.props.connectDragSource(<div class ="h-1/6 mb-3">{this.props.children}</div>);
     }
   }
   
