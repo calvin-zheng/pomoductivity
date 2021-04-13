@@ -1,8 +1,6 @@
 import './App.css';
-<<<<<<< HEAD
 import Timer from './Timer.js';
 import Stats from './stats.js'
-=======
 import React, { useState } from 'react';
 import Kanban from './components/Kanban';
 import firebase from 'firebase/app'
@@ -14,7 +12,6 @@ import {
   IfFirebaseAuthedAnd
 } from "@react-firebase/auth";
   import { config } from "./config.js";
->>>>>>> kanban
 
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
