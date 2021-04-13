@@ -84,7 +84,7 @@ class Kanban extends Component {
           <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <div class = "flex h-full w-full">
                 <FirebaseDatabaseNode
-                  path={"/" + this.props.user.uid}
+                  path={"/kanban/" + this.props.user.uid}
                   limitToFirst={this.state.limit}
                   orderByValue={"created_on"}
                 >
@@ -118,7 +118,7 @@ class Kanban extends Component {
                                 <div>{column}</div>
                                 <div class ="flex flex-col h-full w-full">
                                 {columnsToTasks[column].map((item) => (
-                                  <FirebaseDatabaseMutation path={"/" + this.props.user.uid} type="update">
+                                  <FirebaseDatabaseMutation path={"/kanban/" + this.props.user.uid} type="update">
                                     {({ runMutation }) => (
                                       <KanbanItem id={item.id} onDrop={async (item, column) => {
                                         this.onDrop(item, column);
@@ -135,7 +135,7 @@ class Kanban extends Component {
                     ))}
                 </DndProvider>
               <br/>
-              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/" + this.props.user.uid} type="update">
+              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/kanban/"" + this.props.user.uid} type="update">
                 {({ runMutation }) => (
                     <button onClick={async (event) => {
                       console.log("test");
