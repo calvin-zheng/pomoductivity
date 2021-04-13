@@ -3,6 +3,10 @@ import { DndProvider, DropTarget, DragSource } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import KanbanCard from "./KanbanCard";
 import { v4 as uuidv4 } from 'uuid';
+import firebase from "firebase/app";
+import "firebase/database";
+import { config } from "../config.js";
+import { FirebaseDatabaseProvider, FirebaseDatabaseNode, FirebaseDatabaseMutation} from "@react-firebase/database";
 
 class Kanban extends Component {
 
@@ -76,9 +80,37 @@ class Kanban extends Component {
       
     render() {
         const { columns, columnsToTasks } = this.state;
-        console.log(columnsToTasks);
         return (
+          <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <div class = "flex h-full w-full">
+                <FirebaseDatabaseNode
+                  path={"/" + this.props.user.uid}
+                  limitToFirst={this.state.limit}
+                  orderByValue={"created_on"}
+                >
+                  {d => {
+                    if(d === null || d.value === null) {
+                      return (
+                        <React.Fragment>
+                        </React.Fragment>
+                      );
+                    }
+                    let newColumnsToTasks = {};
+                    for (let i = 0; i < columns.length; i++) {
+                      if (d.value[columns[i]] != null) {
+                        newColumnsToTasks[columns[i]] = d.value[columns[i]];
+                      }
+                      else {
+                        newColumnsToTasks[columns[i]] = [];
+                      }
+                    }
+                    this.setState({columnsToTasks: newColumnsToTasks})
+                    return (
+                      <React.Fragment>
+                      </React.Fragment>
+                    );
+                  }}
+                </FirebaseDatabaseNode>
                 <DndProvider backend={HTML5Backend}>
                     {columns.map((column) => (
                         <KanbanColumn status={column}>
@@ -86,30 +118,49 @@ class Kanban extends Component {
                                 <div>{column}</div>
                                 <div class ="flex flex-col h-full w-full">
                                 {columnsToTasks[column].map((item) => (
-                                    <KanbanItem id={item.id} onDrop={this.onDrop}>
-                                        <KanbanCard id={item.id} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
-                                    </KanbanItem>
-                                    ))}
+                                  <FirebaseDatabaseMutation path={"/" + this.props.user.uid} type="update">
+                                    {({ runMutation }) => (
+                                      <KanbanItem id={item.id} onDrop={async (item, column) => {
+                                        this.onDrop(item, column);
+                                        const { key } = await runMutation(this.state.columnsToTasks);                             
+                                      }}>
+                                          <KanbanCard id={item.id} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
+                                      </KanbanItem>
+                                    )}
+                                  </FirebaseDatabaseMutation>
+                                  ))}
                                 </div>
                             </React.Fragment>
                     </KanbanColumn>
                     ))}
                 </DndProvider>
               <br/>
-              <form class = "bg-gray-400 w-2/6 h-1/6" onSubmit={this.addTask}>
-                <label for="task">Task name: </label>
-                <input value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
-                <label for="priority">Priority: </label>
-                <select id="priority" name="priority" value={this.state.priority} onChange={this.handlePriorityChange} >
-                  <option value={"0"}>High</option>
-                  <option value={"1"}>Medium</option>
-                  <option value={"2"}>Low</option>
-                </select>  <br/>
-                <label for="date">Date: </label>
-                <input type="text" id="date" name="date" value={this.state.date} onChange={this.handleDateChange} /> <br/>
-                <button type="submit">Add task</button>
-              </form>
+              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/" + this.props.user.uid} type="update">
+                {({ runMutation }) => (
+                    <button onClick={async (event) => {
+                      console.log("test");
+                      this.addTask(event);
+                      const { key } = await runMutation(this.state.columnsToTasks);                             
+                    }}>
+                      Add task
+                    </button>
+                )}
+              </FirebaseDatabaseMutation>
+              <form class = "bg-gray-400 w-2/6 h-1/6">
+                  <label>Task name: </label>
+                  <input value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
+                  <label>Priority: </label>
+                  <select id="priority" name="priority" value={this.state.priority} onChange={this.handlePriorityChange} >
+                    <option value={"0"}>High</option>
+                    <option value={"1"}>Medium</option>
+                    <option value={"2"}>Low</option>
+                  </select>  <br/>
+                  <label>Date: </label>
+                  <input type="text" id="date" name="date" value={this.state.date} onChange={this.handleDateChange} /> <br/>
+                </form>
+              <button onClick = {this.props.signOut}>Sign out</button>
             </div>
+            </FirebaseDatabaseProvider>
         );
       }
 }
@@ -153,7 +204,8 @@ const boxTarget = {
   
   class KanbanItem extends React.Component {
     render() {
-      return this.props.connectDragSource(<div class ="h-1/6 mb-3">{this.props.children}</div>);
+      console.log(this.props.children);
+      return this.props.connectDragSource(<div class ="h-1/6 mb-3 ">{this.props.children}</div>);
     }
   }
   
