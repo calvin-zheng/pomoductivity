@@ -1,4 +1,8 @@
 import React, { Component } from "react";
+import firebase from "firebase/app";
+import "firebase/database";
+import { config } from "../config.js";
+import { FirebaseDatabaseProvider, FirebaseDatabaseNode, FirebaseDatabaseMutation} from "@react-firebase/database";
 
 class KanbanCard extends Component {
 
@@ -25,11 +29,20 @@ class KanbanCard extends Component {
     }
 
     render() {
-        return <div  key={this.id} class = "rounded-lg mx-auto w-5/6 bg-gray-50">
-            <p>{this.props.task}</p>
-            {this.getPriorityText()}
-            <p>{this.props.dueDate}</p>
-        </div>;
+        return <div key={this.id} class = "rounded-lg mx-auto w-5/6 bg-gray-50">
+                <p>{this.props.task}</p>
+                {this.getPriorityText()}
+                <p>{this.props.dueDate}</p>
+                <FirebaseDatabaseMutation key={this.props.task} path={"/" + this.props.uid} type="set">
+                    {({ runMutation }) => (
+                        <button onClick={async (event) => {
+                            console.log("deleted") 
+                        }}>
+                        Delete
+                        </button>
+                    )}
+                </FirebaseDatabaseMutation>
+            </div>;
     }
 }
 

@@ -124,7 +124,7 @@ class Kanban extends Component {
                                         this.onDrop(item, column);
                                         const { key } = await runMutation(this.state.columnsToTasks);                             
                                       }}>
-                                          <KanbanCard id={item.id} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
+                                          <KanbanCard id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
                                       </KanbanItem>
                                     )}
                                   </FirebaseDatabaseMutation>
