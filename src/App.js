@@ -21,6 +21,8 @@ function App() {
     return (
       <div className="App">
         <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
+        <Timer/>
+        <Stats/>
       </div>
     );
   }
@@ -56,8 +58,6 @@ function App() {
           </IfFirebaseAuthedAnd>
         </div>
       </div>
-      <Timer/>
-      <Stats/>
     </FirebaseAuthProvider>
   );
 }
