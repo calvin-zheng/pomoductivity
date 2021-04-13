@@ -44,7 +44,7 @@ class Kanban extends Component {
             if(task.id === item) {
                 //remove item
                 taskToRemove = task;
-                columnsToTasks[currentColumn].splice(j, 1); 
+                columnsToTasks[currentColumn].splice(j, 1);
             }
         }
       }
@@ -66,7 +66,7 @@ class Kanban extends Component {
     handleDateChange(event) {
       this.setState({date: event.target.value});
     }
-  
+
     addTask(event) {
       const { taskName, priority, date } = this.state;
       if (taskName === "" || priority === "" || date === "")
@@ -77,14 +77,14 @@ class Kanban extends Component {
       this.setState(newState);
       event.preventDefault();
     }
-      
+
     render() {
         const { columns, columnsToTasks } = this.state;
         return (
           <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <div class = "flex h-full w-full">
                 <FirebaseDatabaseNode
-                  path={"/kanban/" + this.props.user.uid}
+                  path={"/kanban/"}
                   limitToFirst={this.state.limit}
                   orderByValue={"created_on"}
                 >
@@ -122,7 +122,7 @@ class Kanban extends Component {
                                     {({ runMutation }) => (
                                       <KanbanItem id={item.id} onDrop={async (item, column) => {
                                         this.onDrop(item, column);
-                                        const { key } = await runMutation(this.state.columnsToTasks);                             
+                                        const { key } = await runMutation(this.state.columnsToTasks);
                                       }}>
                                           <KanbanCard id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
                                       </KanbanItem>
@@ -135,12 +135,12 @@ class Kanban extends Component {
                     ))}
                 </DndProvider>
               <br/>
-              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/kanban/"" + this.props.user.uid} type="update">
+              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/kanban/" + this.props.user.uid} type="update">
                 {({ runMutation }) => (
                     <button onClick={async (event) => {
                       console.log("test");
                       this.addTask(event);
-                      const { key } = await runMutation(this.state.columnsToTasks);                             
+                      const { key } = await runMutation(this.state.columnsToTasks);
                     }}>
                       Add task
                     </button>
@@ -173,26 +173,26 @@ const boxTarget = {
       return { name: props.status };
     },
   };
-  
+
   class KanbanColumn extends React.Component {
     render() {
       return this.props.connectDropTarget(<div class = "h-full w-1/3 rounded-md border-4 border-black bg-opacity-30 bg-blue-500 m-2" >{this.props.children}</div>);
     }
   }
-  
+
   KanbanColumn = DropTarget("kanbanItem", boxTarget, (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
     canDrop: monitor.canDrop(),
   }))(KanbanColumn);
-    
+
   const boxSource = {
     beginDrag(props) {
       return {
         id: props.id,
       };
     },
-  
+
     endDrag(props, monitor) {
       const item = monitor.getItem();
       const dropResult = monitor.getDropResult();
@@ -201,14 +201,14 @@ const boxTarget = {
       }
     },
   };
-  
+
   class KanbanItem extends React.Component {
     render() {
       console.log(this.props.children);
       return this.props.connectDragSource(<div class ="h-1/6 mb-3 ">{this.props.children}</div>);
     }
   }
-  
+
   KanbanItem = DragSource("kanbanItem", boxSource, (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),

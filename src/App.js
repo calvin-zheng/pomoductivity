@@ -21,12 +21,12 @@ function App() {
     return (
       <div className="App">
         <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
-        <Timer/>
+        <Timer user={user} />
         <Stats/>
       </div>
     );
   }
-  
+
   return (
     <FirebaseAuthProvider {...config} firebase={firebase}>
       <div>
@@ -45,7 +45,7 @@ function App() {
               <pre style={{ height: 300, overflow: "auto" }}>
                 {JSON.stringify({ isSignedIn, user, providerId }, null, 2)}
               </pre>
-            );  
+            );
           }}
         </FirebaseAuthConsumer>
         <div>
