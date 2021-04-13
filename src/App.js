@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import Timer from './Timer.js';
+import Stats from './stats.js'
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       {/*<header className="App-header">*/}
       {/*</header>*/}
       <Timer />
+      <Stats />
     </div>
   );
 }
