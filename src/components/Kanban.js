@@ -6,10 +6,21 @@ import { v4 as uuidv4 } from 'uuid';
 import firebase from "firebase/app";
 import "firebase/database";
 import { config } from "../config.js";
-import { FirebaseDatabaseProvider, FirebaseDatabaseNode, FirebaseDatabaseMutation} from "@react-firebase/database";
+import { FirebaseDatabaseProvider} from "@react-firebase/database";
+import Modal from 'react-modal';
+
+const modalStyle = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 
 class Kanban extends Component {
-
     constructor(props) {
         super(props);
         this.onDrop = this.onDrop.bind(this);
@@ -18,6 +29,8 @@ class Kanban extends Component {
         this.handlePriorityChange = this.handlePriorityChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
+        this.modalIsOpen = this.modalIsOpen.bind(this);
+        this.closeModal = this.closeModal.bind(this);
         let columns = ["Not started", "In progress", "Completed"]
         let columnsToTasks = {}
         for (let i = 0; i < columns.length; i++) {
@@ -45,9 +58,10 @@ class Kanban extends Component {
           columnsToTasks: columnsToTasks,
           taskName: "",
           priority: "0",
-          date: ""
+          date: "",
+          modalOpen: false
         };
-    }
+    } 
 
     updateFirebase(uid) {
       firebase.database().ref("/kanban/" + uid).update(this.state.columnsToTasks);
@@ -99,6 +113,7 @@ class Kanban extends Component {
       newState.columnsToTasks[this.state.columns[0]].push(newTask);
       this.setState(newState);
       this.updateFirebase(this.props.user.uid, newState.columnsToTasks);
+      this.closeModal();
       event.preventDefault();
     }
 
@@ -120,36 +135,27 @@ class Kanban extends Component {
       this.updateFirebase(this.props.user.uid, columnsToTasks);
     }
 
+    modalIsOpen() {
+      console.log(this.state.modalOpen);
+      return this.state.modalOpen;
+    }
+
+
+    closeModal() {
+      this.setState({modalOpen: false});
+    }
+
     render() {
         const { columns, columnsToTasks } = this.state;
         return (
           <FirebaseDatabaseProvider firebase={firebase} {...config}>
-            <div class = "flex h-full w-full">
-                <DndProvider backend={HTML5Backend}>
-                    {columns.map((column) => (
-                        <KanbanColumn status={column}>
-                            <React.Fragment>
-                                <div>{column}</div>
-                                <div class ="flex flex-col h-full w-full">
-                                {columnsToTasks[column].map((item) => (
-                                      <KanbanItem id={item.id} onDrop={async (item, column) => {
-                                        this.onDrop(item, column);
-                                      }}>
-                                          <KanbanCard delete={this.deleteTask} id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
-                                      </KanbanItem>
-                                  ))}
-                                </div>
-                            </React.Fragment>
-                    </KanbanColumn>
-                    ))}
-                </DndProvider>
-              <br/>
-              <button onClick={async (event) => {
-                this.addTask(event);
-              }}>
-                Add task
-              </button>
-              <form class = "bg-gray-400 w-2/6 h-1/6">
+          {this.state.modalOpen ? <Modal
+            isOpen={this.modalIsOpen}
+            onRequestClose={this.closeModal}
+            style={modalStyle}
+            contentLabel="Add task"
+           >
+             <form class = "bg-gray-400 w-2/6 h-1/6">
                   <label>Task name: </label>
                   <input value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
                   <label>Priority: </label>
@@ -161,6 +167,31 @@ class Kanban extends Component {
                   <label>Date: </label>
                   <input type="text" id="date" name="date" value={this.state.date} onChange={this.handleDateChange} /> <br/>
                 </form>
+                <button onClick={async (event) => {
+                this.addTask(event);
+              }}>
+                Add task
+              </button>
+           </Modal> : <div></div>}
+            <div class = "flex h-full w-full">
+                <DndProvider backend={HTML5Backend}>
+                    {columns.map((column) => (
+                      <KanbanColumn status={column}>
+                                <div>{column}</div>
+                                <div class ="flex flex-col h-full w-full">
+                                {columnsToTasks[column].map((item) => (
+                                      <KanbanItem id={item.id} onDrop={async (item, column) => {
+                                        this.onDrop(item, column);
+                                      }}>
+                                          <KanbanCard delete={this.deleteTask} id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
+                                      </KanbanItem>
+                                  ))}
+                                 {column === columns[0] ? <button onClick={async () => {this.setState({modalOpen: true})}}>+</button>: <div></div>}
+                                </div>
+                    </KanbanColumn>
+                    ))}
+                </DndProvider>
+              <br/>
               <button onClick = {this.props.signOut}>Sign out</button>
             </div>
             </FirebaseDatabaseProvider>
