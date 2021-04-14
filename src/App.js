@@ -23,7 +23,7 @@ function App() {
       <div className="App">
         <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
         <Timer user={user} />
-        <Stats/>
+        <Stats user={user}/>
         <Groups user={user}/>
       </div>
     );
