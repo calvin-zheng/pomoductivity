@@ -27,11 +27,16 @@ class Stats extends Component{
 
   componentDidMount(){
     var datatesting = null
-    firebase.database().ref("/stats/" + this.props.user).on('value', (snapshot) => {
-      this.setState({
-        testdata: snapshot.val()
-      });
+    firebase.database().ref("/stats/" + this.props.user.uid).on('value', (snapshot) => {
       datatesting = snapshot.val();
+    });
+    var actual = [ {name:"Sunday", value: 0},{name:"Monday", value: 0}, {name:"Tuesday", value: 0}, {name:"Wednesday", value: 0}, {name:"Thursday", value: 0}, {name:"Friday", value: 0}, {name:"Saturday", value: 0}]
+    var i
+    for (i = 0; i < actual.length; i++){
+      actual[i].value = datatesting[i];
+    }
+    this.setState({
+      testdata: actual
     });
     
   }
@@ -92,8 +97,16 @@ class Stats extends Component{
             </LineChart>
           </div>
           <div>
-            Testing here:
+            Actual Data from Database Minutes:
             {console.log("testing this", this.state.testdata)}
+            <div className = "bar"> 
+              <BarChart width={730} height={250} data={this.state.testdata}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <Bar dataKey="value" fill="#8884d8" />
+                <XAxis dataKey="name" />
+                <YAxis label={{ value: 'Tasks Completed', angle: -90, position: 'insideLeft' }} />
+              </BarChart>
+          </div>
           </div>
 
       </div>

@@ -1174,7 +1174,7 @@
 
 "@craco/craco@^6.1.1":
   version "6.1.1"
-  resolved "https://registry.npmjs.org/@craco/craco/-/craco-6.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/@craco/craco/-/craco-6.1.1.tgz#0233b28d6896b6560379f64b608d3c888874e9fa"
   integrity sha512-4irfOM8RgYNhFJzAXyIuM8CZLju2Jh9GdOem8uqM2/cI2xPulQSxZKU/9q3uiSbFUJfQLi3pomVKii6KzWLu3Q==
   dependencies:
     cross-spawn "^7.0.0"
