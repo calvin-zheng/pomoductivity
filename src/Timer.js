@@ -7,7 +7,6 @@ import KanbanCard from "./components/KanbanCard";
 class Timer extends Component{
     constructor(props){
         super(props);
-        console.log("hello");
 
         this.state = {
             initTime: 1500,
@@ -18,12 +17,12 @@ class Timer extends Component{
             break: false,
             sessions: 0,
             intervalId: 0,
-            dates: {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0}
+            dates: {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6:0},
+            statWeek: null
         };
         this.startCountdown = this.startCountdown.bind(this);
         this.decreaseTime = this.decreaseTime.bind(this);
         this.stopCountdown = this.stopCountdown.bind(this);
-        this.updateDatabase = this.updateDatabase.bind(this);
     }
 
     startCountdown(){
@@ -40,15 +39,27 @@ class Timer extends Component{
         });
     }
 
-    updateDatabase(){
-
+    componentDidMount() {
+        firebase.database().ref("/stats/" + this.props.user.uid).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data !== null) {
+                let defaultDates = this.state.dates;
+                for(let i = 0; i < data.length; i++){
+                    defaultDates[i] = data[i];
+                }
+                this.setState({dates: defaultDates});
+            }
+        });
+        const today = new Date();
+        const weekBegin = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
     }
 
     decreaseTime(){
-        if(this.state.time % 10 === 0 && !this.state.break){
+        if(this.state.time % 10 === 0 && !this.state.break &&
+            (this.state.initTime - this.state.time) !== 0){
             const day = (new Date()).getDay();
             let newDates = this.state.dates;
-            newDates[day] = this.state.initTime - this.state.time;
+            newDates[day] += 10;
             this.setState({dates: newDates});
 
             firebase.database().ref("/stats/" + this.props.user.uid).update(
@@ -112,19 +123,6 @@ class Timer extends Component{
         return (
             <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <div className="rounded-xl bg-white bg-opacity-10 w-1/2 text-white mx-auto flex flex-col space-y-3 p-5">
-                    <FirebaseDatabaseNode path={"stats/" + this.props.user.uid}>
-                        {data => {
-                            const { value } = data;
-                            console.log("i made it here");
-                            if (value === null || typeof value === "undefined") return null;
-                            console.log("i did not return null");
-                            const keys = Object.keys(value);
-                            const values = Object.values(value);
-                            console.log(keys)
-                            console.log(values)
-                            return <React.Fragment></React.Fragment>;
-                        }}
-                    </FirebaseDatabaseNode>
                     {!this.state.started && !this.state.break && <div>
                         Let's get started!
                     </div>}
