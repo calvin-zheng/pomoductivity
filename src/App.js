@@ -1,6 +1,7 @@
 import './App.css';
 import Timer from './Timer.js';
 import Stats from './stats.js'
+import Groups from './components/Groups'
 import React, { useState } from 'react';
 import Kanban from './components/Kanban';
 import firebase from 'firebase/app'
@@ -23,6 +24,7 @@ function App() {
         <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
         <Timer user={user} />
         <Stats/>
+        <Groups user={user}/>
       </div>
     );
   }
