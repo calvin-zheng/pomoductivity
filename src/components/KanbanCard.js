@@ -36,7 +36,7 @@ class KanbanCard extends Component {
                 <FirebaseDatabaseMutation key={this.props.task} path={"/kanban/" + this.props.uid} type="set">
                     {({ runMutation }) => (
                         <button onClick={async (event) => {
-                            console.log("deleted") 
+                          this.props.delete(this.props.id);
                         }}>
                         Delete
                         </button>
