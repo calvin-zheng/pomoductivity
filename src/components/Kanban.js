@@ -17,11 +17,29 @@ class Kanban extends Component {
         this.handleTaskChange = this.handleTaskChange.bind(this);
         this.handlePriorityChange = this.handlePriorityChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
+        this.deleteTask = this.deleteTask.bind(this);
         let columns = ["Not started", "In progress", "Completed"]
         let columnsToTasks = {}
         for (let i = 0; i < columns.length; i++) {
           columnsToTasks[columns[i]] = []
         }
+        firebase.database().ref("/kanban/" + this.props.user.uid).on('value', (snapshot) => {
+          const d = snapshot.val();
+          console.log(d);
+          if(d === null) {
+            return;
+          }
+          let newColumnsToTasks = {};
+          for (let i = 0; i < columns.length; i++) {
+            if (d[columns[i]] != null) {
+              newColumnsToTasks[columns[i]] = d[columns[i]];
+            }
+            else {
+              newColumnsToTasks[columns[i]] = [];
+            }
+          }
+          this.setState({columnsToTasks: newColumnsToTasks})
+        });
         this.state = {
           columns: columns,
           columnsToTasks: columnsToTasks,
@@ -29,6 +47,10 @@ class Kanban extends Component {
           priority: "0",
           date: ""
         };
+    }
+
+    updateFirebase(uid) {
+      firebase.database().ref("/kanban/" + uid).update(this.state.columnsToTasks);
     }
 
     onDrop(item, column) {
@@ -53,6 +75,7 @@ class Kanban extends Component {
       tasksToAddTo.push(taskToRemove);
       columnsToTasks[column] = tasksToAddTo;
       this.setState({columnsToTasks: columnsToTasks});
+      this.updateFirebase(this.props.user.uid, columnsToTasks)
     };
 
     handleTaskChange(event) {
@@ -75,7 +98,26 @@ class Kanban extends Component {
       let newTask = {id:uuidv4(), title: taskName, priority: priority, dueDate: date};
       newState.columnsToTasks[this.state.columns[0]].push(newTask);
       this.setState(newState);
+      this.updateFirebase(this.props.user.uid, newState.columnsToTasks);
       event.preventDefault();
+    }
+
+    deleteTask(id) {
+      let columns = this.state.columns;
+      let columnsToTasks = this.state.columnsToTasks;
+      for(let i = 0; i < columns.length; i++) {
+        const currentColumn = columns[i];
+        const tasks = columnsToTasks[currentColumn];
+        for(let j = 0; j < tasks.length; j++) {
+            const task = tasks[j];
+            if(task.id === id) {
+                //remove item
+                columnsToTasks[currentColumn].splice(j, 1);
+            }
+        }
+      }
+      this.setState({columnsToTasks: columnsToTasks});
+      this.updateFirebase(this.props.user.uid, columnsToTasks);
     }
 
     render() {
@@ -83,34 +125,6 @@ class Kanban extends Component {
         return (
           <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <div class = "flex h-full w-full">
-                <FirebaseDatabaseNode
-                  path={"/kanban/"}
-                  limitToFirst={this.state.limit}
-                  orderByValue={"created_on"}
-                >
-                  {d => {
-                    if(d === null || d.value === null) {
-                      return (
-                        <React.Fragment>
-                        </React.Fragment>
-                      );
-                    }
-                    let newColumnsToTasks = {};
-                    for (let i = 0; i < columns.length; i++) {
-                      if (d.value[columns[i]] != null) {
-                        newColumnsToTasks[columns[i]] = d.value[columns[i]];
-                      }
-                      else {
-                        newColumnsToTasks[columns[i]] = [];
-                      }
-                    }
-                    this.setState({columnsToTasks: newColumnsToTasks})
-                    return (
-                      <React.Fragment>
-                      </React.Fragment>
-                    );
-                  }}
-                </FirebaseDatabaseNode>
                 <DndProvider backend={HTML5Backend}>
                     {columns.map((column) => (
                         <KanbanColumn status={column}>
@@ -118,16 +132,11 @@ class Kanban extends Component {
                                 <div>{column}</div>
                                 <div class ="flex flex-col h-full w-full">
                                 {columnsToTasks[column].map((item) => (
-                                  <FirebaseDatabaseMutation path={"/kanban/" + this.props.user.uid} type="update">
-                                    {({ runMutation }) => (
                                       <KanbanItem id={item.id} onDrop={async (item, column) => {
                                         this.onDrop(item, column);
-                                        const { key } = await runMutation(this.state.columnsToTasks);
                                       }}>
-                                          <KanbanCard id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
+                                          <KanbanCard delete={this.deleteTask} id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
                                       </KanbanItem>
-                                    )}
-                                  </FirebaseDatabaseMutation>
                                   ))}
                                 </div>
                             </React.Fragment>
@@ -135,17 +144,11 @@ class Kanban extends Component {
                     ))}
                 </DndProvider>
               <br/>
-              <FirebaseDatabaseMutation key={this.state.taskName  } path={"/kanban/" + this.props.user.uid} type="update">
-                {({ runMutation }) => (
-                    <button onClick={async (event) => {
-                      console.log("test");
-                      this.addTask(event);
-                      const { key } = await runMutation(this.state.columnsToTasks);
-                    }}>
-                      Add task
-                    </button>
-                )}
-              </FirebaseDatabaseMutation>
+              <button onClick={async (event) => {
+                this.addTask(event);
+              }}>
+                Add task
+              </button>
               <form class = "bg-gray-400 w-2/6 h-1/6">
                   <label>Task name: </label>
                   <input value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
@@ -204,7 +207,6 @@ const boxTarget = {
 
   class KanbanItem extends React.Component {
     render() {
-      console.log(this.props.children);
       return this.props.connectDragSource(<div class ="h-1/6 mb-3 ">{this.props.children}</div>);
     }
   }

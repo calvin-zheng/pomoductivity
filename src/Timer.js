@@ -7,7 +7,6 @@ import KanbanCard from "./components/KanbanCard";
 class Timer extends Component{
     constructor(props){
         super(props);
-        console.log("hello");
 
         this.state = {
             initTime: 1500,
@@ -115,13 +114,9 @@ class Timer extends Component{
                     <FirebaseDatabaseNode path={"stats/" + this.props.user.uid}>
                         {data => {
                             const { value } = data;
-                            console.log("i made it here");
                             if (value === null || typeof value === "undefined") return null;
-                            console.log("i did not return null");
                             const keys = Object.keys(value);
                             const values = Object.values(value);
-                            console.log(keys)
-                            console.log(values)
                             return <React.Fragment></React.Fragment>;
                         }}
                     </FirebaseDatabaseNode>
