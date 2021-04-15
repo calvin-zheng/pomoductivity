@@ -58,11 +58,11 @@ class Stats extends Component{
         <div className = "rounded-xl bg-white bg-opacity-10 w-1/2 text-white mx-auto p-4">
           <BarChart className="mx-auto" width={730} height={500} data={this.state.data}>
             {/*<CartesianGrid strokeDasharray="3 3" />*/}
-            <Legend width={200} wrapperStyle={{ top: 40, right: 20, backgroundColor: '#f5f5f5', border: '1px solid #d5d5d5', borderRadius: 3, lineHeight: '40px' }} />
+            <Legend width={200} wrapperStyle={{ top: 40, right: 20, backgroundColor: '#4D6EDB', border: '1px solid #d5d5d5', borderRadius: 3, lineHeight: '40px' }} />
             <XAxis dataKey="name" style={{fill: "#FFFFFF"}}/>
             <YAxis label={{angle: -90, position: 'insideLeft', fill: "#FFFFFF" }} style={{fill: "#FFFFFF"}}/>
             <Tooltip cursor={{fill: 'rgba(0, 0, 255, 0.1)'}} content={<CustomTooltip />} wrapperStyle={{ width: 200, backgroundColor: 'rgba(0,0,0, 0.3)' }} />
-            <Bar name="Minutes Worked" dataKey="value" fill="#8884d8" />
+            <Bar name="Minutes Worked" dataKey="value" fill="#ffffff" />
             {/*<Tooltip wrapperStyle={{ width: 1000, backgroundColor: '#ccc' }} />*/}
             {/*<Line name="Minutes Studied" type="monotone" dataKey="value" stroke="#8884d8" />*/}
           </BarChart>
