@@ -2381,7 +2381,7 @@
   resolved "https://registry.npmjs.org/@types/q/-/q-1.5.4.tgz"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
-"@types/react-dom@^16.8.2":
+"@types/react-dom@^16.8.2", "@types/react-dom@^16.9.7":
   version "16.9.12"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-16.9.12.tgz"
   integrity sha512-i7NPZZpPte3jtVOoW+eLB7G/jsX5OM6GqQnH+lC0nq0rqwlK0x8WcMEvYDgFWqWhWMlTltTimzdMax6wYfZssA==
@@ -2407,7 +2407,7 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^16", "@types/react@^16.8.6":
+"@types/react@^16", "@types/react@^16.8.6", "@types/react@^16.9.34":
   version "16.14.5"
   resolved "https://registry.npmjs.org/@types/react/-/react-16.14.5.tgz"
   integrity sha512-YRRv9DNZhaVTVRh9Wmmit7Y0UFhEVqXqCSw3uazRWMxa2x85hWQZ5BN24i7GXZbaclaLXEcodEeIHsjBA8eAMw==
@@ -11289,7 +11289,7 @@ react-motion@^0.5.0:
 
 react-photo-collage@^1.0.7:
   version "1.0.7"
-  resolved "https://registry.npmjs.org/react-photo-collage/-/react-photo-collage-1.0.7.tgz"
+  resolved "https://registry.yarnpkg.com/react-photo-collage/-/react-photo-collage-1.0.7.tgz#f971e1ecae45b942a3f0998a676ad47ade1bb9b8"
   integrity sha512-4oaJr/2fiDI/0mm0H+17iwy48N1F3ubhgOklEuNL6Ozx2CDNuTv2wyjMUUZEllxtb7GyXoNRzHy1fjrgbgjcpA==
   dependencies:
     "@types/react" "^16.8.6"
@@ -11297,6 +11297,14 @@ react-photo-collage@^1.0.7:
     react "^16.8.3"
     react-dom "^16.8.3"
     react-images "^1.0.0"
+
+react-photo-grid@^1.4.11:
+  version "1.4.11"
+  resolved "https://registry.yarnpkg.com/react-photo-grid/-/react-photo-grid-1.4.11.tgz#f732d319ead1b25a0978d3532ef834910a49dd6a"
+  integrity sha512-6C273fTRpSjvJgVn9l1bZfKoA/7YkS4N0+uSM5AY9SxEkOmd0+p+eLc9Weq9fwvWofVbI+mbXSd7EU9j4S8orw==
+  dependencies:
+    "@types/react" "^16.9.34"
+    "@types/react-dom" "^16.9.7"
 
 react-property@1.0.1:
   version "1.0.1"

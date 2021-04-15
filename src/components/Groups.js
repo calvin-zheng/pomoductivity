@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import firebase from "firebase/app";
 import "firebase/database";
 import { config } from "../config.js";
-import { ImageGallery } from 'react-image-gallery';
+import ReactPhotoGrid from "react-photo-grid";
 import { FirebaseDatabaseProvider} from "@react-firebase/database";
 
 class Groups extends Component {
@@ -14,19 +14,21 @@ class Groups extends Component {
         this.createGroup = this.createGroup.bind(this);
         this.joinGroup = this.joinGroup.bind(this);
         this.obtainGroupWeekTotal = this.obtainGroupWeekTotal.bind(this);
+        this.getImagesForGroupCode = this.getImagesForGroupCode.bind(this);
         this.state = {
             createGroupCode: "",
             joinGroupCode: "",
             errorText: "",
             groups: [],
-            groupSum: {}
+            groupSum: {},
+            images: {}
         };
     }
 
-    obtainGroupWeekTotal(){
-        let groupSum = {};
-        for(let i = 0; i < this.state.groups.length; i++) {
-            const groupCode = this.state.groups[i];
+    obtainGroupWeekTotal(groups){
+        let groupSum = this.state.groupSum;
+        for(let i = 0; i < groups.length; i++) {
+            const groupCode = groups[i];
             firebase.database().ref("/groups/" + groupCode).on('value', (snapshot) => {
                 let groupTotal = 0;
                 snapshot.forEach((child) => {
@@ -35,12 +37,12 @@ class Groups extends Component {
                         for (let j = 0; j < 6; j++) {
                             groupTotal += snapshot2.val()[j];
                         }
+                        groupSum[groupCode] = groupTotal;
+                        this.setState({groupSum: groupSum});
                     })
                 });
-                groupSum[groupCode] = groupTotal;
             })
         }
-        this.setState({groupSum: groupSum});
     }
 
     createGroupNameChange(event) {
@@ -64,8 +66,10 @@ class Groups extends Component {
                 })
             }
             this.setState({groups: groups});
-            this.obtainGroupWeekTotal();
-            console.log(this.state.groupSum);
+            this.obtainGroupWeekTotal(groups);
+            for(let group of groups){
+                this.getImagesForGroupCode(group)
+            }
         });
     }
 
@@ -113,41 +117,73 @@ class Groups extends Component {
 
     }
 
+    getImagesForGroupCode(groupCode) {
+        let images = this.state.images;
+        // Check if group code is valid
+        firebase.database().ref("/groups/" + groupCode).once('value', (snapshot) => {
+            // const data = snapshot.val();
+            if(!snapshot.exists()) {
+                this.setState({errorText: "Group code invalid, try another code"});
+                return;
+            }
+            snapshot.forEach((child) => {
+                if(groupCode in images){
+                    images[groupCode].push(child.val().pic);
+                }
+                else{
+                    images[groupCode] = [child.val().pic];
+                }
+            });
+            // console.log(data);
+            // for(let i; i < data.length; i++) {
+            //
+            //     // images.push(data[i].pic)
+            // }
+            this.setState({images: images});
+            // console.log(images);
+        });
+    }
 
     render() {
-        const setting = {
-            width: '600px',
-            height: ['250px', '170px'],
-            layout: [1, 4],
-            photos: [
-              { src: 'url/image-1.jpg' },
-              { src: 'url/image-2.jpg' },
-              { src: 'url/image-3.jpg' },
-              { src: 'url/image-4.jpg' },
-              { src: 'url/image-5.jpg' },
-              { src: 'url/image-6.jpg' },
-            ],
-            showNumOfRemainingPhotos: true
-          };
-
         return <FirebaseDatabaseProvider firebase={firebase} {...config}>
-            <p>Your groups</p>
-            {this.state.groups.map((group) => {
-               return <div>{group}</div>;
-            })}
-            <p>Create group</p>
-            <form class = "bg-gray-400 w-2/6 h-1/6">
-                  <label>Group code:</label>
-                  <input onChange={this.createGroupCodeChange}  type="text" id="task" name="task"/> <br/>
-            </form>
-            <button onClick={(event) => this.createGroup(event)}>Create Group</button>
-            <p>Join group</p>
-            <form class = "bg-gray-400 w-2/6 h-1/6">
-                  <label>Group code:</label>
-                  <input onChange={this.joinGroupCodeChange}  type="text" id="task" name="task"/> <br/>
-            </form>
-            <button onClick={(event) => this.joinGroup(event)}>Join Group</button>
-            <p>{this.state.errorText}</p>
+            <div className="flex flex-row mx-auto w-1/2 items-center justify-center space-x-4 mt-16">
+                <div className="group-creation-form space-y-3 border border-white rounded-md p-4">
+                    <h1 className="text-2xl font-bold">Create group</h1>
+                    <form className = "space-x-3">
+                        <label>Group code:</label>
+                        <input className="rounded-md bg-white bg-opacity-20" onChange={this.createGroupCodeChange}  type="text" id="task" name="task"/> <br/>
+                    </form>
+                    <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded text-sm" onClick={(event) => this.createGroup(event)}>Create</button>
+                </div>
+                <div className="group-join-form space-y-3 border border-white rounded-md p-4">
+                    <h1 className="text-2xl font-bold">Join group</h1>
+                    <form className = "space-x-3">
+                        <label>Group code:</label>
+                        <input className="rounded-md bg-white bg-opacity-20" onChange={this.joinGroupCodeChange}  type="text" id="task" name="task"/> <br/>
+                    </form>
+                    <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded text-sm" onClick={(event) => this.joinGroup(event)}>Join</button>
+                </div>
+
+                <p>{this.state.errorText}</p>
+            </div>
+            <h1 className="text-2xl font-bold mt-16">Your groups</h1>
+            <div className="grid grid-cols-3 gap-4 w-3/4 mx-auto mt-8">
+                {this.state.groups.map((group) => {
+
+                    return (
+                        <div className="rounded-xl bg-white bg-opacity-10 w-3/4 text-white mx-auto flex flex-col p-5">
+                            <h2 className="text-xl font-bold">{group}</h2>
+                            <div className="flex flex-row mx-auto">
+                                {this.state.images[group] &&
+                                this.state.images[group].map((image, i) => {
+                                    return <img className="rounded-full h-10 w-10 flex-grow-0" src={image} />
+                                })}
+                            </div>
+                            {(Math.floor(this.state.groupSum[group]/60) === 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minute worked collectively</p>}
+                            {(Math.floor(this.state.groupSum[group]/60) !== 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minutes worked collectively</p>}
+                        </div>);
+                })}
+            </div>
 
 
         </FirebaseDatabaseProvider>

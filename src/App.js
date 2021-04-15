@@ -22,19 +22,37 @@ function App() {
   const [user, setUser] = useState(null);
 
   if (isSignedIn) {
+    let profileStyle = {"display": "inline-block", "width": "50px", "height": "50px", "border-radius": "50%", "object-fit": "cover", "margin": "10px"};
     return (
-      <div className="App">
+      <div className="App text-white">
+        <React.Fragment> Pomoductivity </React.Fragment>
+        <img src={user.photoURL} style={profileStyle}/>
+        <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded" onClick = {() => { firebase.auth().signOut(); setIsSignedIn(false);}}>Sign out</button>
         <Nav />
-
         <Route
           path="/stats" 
           render={() => (
             <Stats user={user} />
           )}
         />
-        <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
-        <Timer user={user} />
-        <Groups user={user}/>
+         <Route
+          path="/kanban" 
+          render={() => (
+            <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user}/> </div>
+          )}
+        />
+         <Route
+          path="/timer" 
+          render={() => (
+            <Timer user={user} />
+            )}
+        />
+         <Route
+          path="/groups" 
+          render={() => (
+            <Groups user={user}/>
+          )}
+        />
       </div>
     );
   }

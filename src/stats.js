@@ -26,32 +26,33 @@ class Stats extends Component{
   componentDidMount(){
 
     var datatesting = [ {name:"Sunday", value: 0},{name:"Monday", value: 0}, {name:"Tuesday", value: 0}, {name:"Wednesday", value: 0}, {name:"Thursday", value: 0}, {name:"Friday", value: 0}, {name:"Saturday", value: 0}]
-    firebase.database().ref("/stats/" + this.props.user.uid).on('value', (snapshot) => {
+    firebase.database().ref("/stats/" + this.props.user.uid).once('value', (snapshot) => {
       datatesting = snapshot.val();
     });
     console.log(datatesting)
     var actual = [ {name:"Sunday", value: 0},{name:"Monday", value: 0}, {name:"Tuesday", value: 0}, {name:"Wednesday", value: 0}, {name:"Thursday", value: 0}, {name:"Friday", value: 0}, {name:"Saturday", value: 0}]
     var i
     for (i = 0; i < actual.length; i++){
-      actual[i].value = datatesting[i];
+      actual[i].value = Math.floor(datatesting[i].value/60);
+      console.log(actual[i].value);
     }
     this.setState({
       testdata: actual
     });
-    
+
   }
-  
+
 
   render(){
     return (
-      
-      <div className="statisticstesting"> 
+
+      <div className="statisticstesting">
         <h1> Welcome to Statistics</h1>
-        
+
           <div>
             Actual Data from Database Minutes:
             {console.log("testing this", this.state.testdata)}
-            <div className = "bar"> 
+            <div className = "bar">
               <BarChart width={730} height={250} data={this.state.testdata}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <Bar dataKey="value" fill="#8884d8" />

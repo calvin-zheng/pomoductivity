@@ -193,7 +193,6 @@ class Kanban extends Component {
                     ))}
                 </DndProvider>
               <br/>
-              <button onClick = {this.props.signOut}>Sign out</button>
             </div>
             </FirebaseDatabaseProvider>
         );
