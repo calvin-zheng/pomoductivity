@@ -62,7 +62,7 @@ class Kanban extends Component {
           date: "",
           modalOpen: false
         };
-    } 
+    }
 
     componentDidMount(){
       let columns = ["Not started", "In progress", "Completed"]
@@ -96,7 +96,7 @@ class Kanban extends Component {
           modalOpen: false
         };
     }
-  
+
     updateFirebase(uid) {
       firebase.database().ref("/kanban/" + uid).update(this.state.columnsToTasks);
     }
@@ -207,12 +207,12 @@ class Kanban extends Component {
                 Add task
               </button>
            </Modal> : <div></div>}
-            <div class = "flex h-full w-full">
+            <div className = "flex h-full w-2/3 mx-auto">
                 <DndProvider backend={HTML5Backend}>
                     {columns.map((column) => (
-                      <KanbanColumn status={column}>
-                                <div>{column}</div>
-                                <div class ="flex flex-col h-full w-full">
+                      <KanbanColumn className="" status={column}>
+                                <div className="text-2xl font-bold">{column}</div>
+                                <div className ="flex flex-col w-full">
                                 {columnsToTasks[column].map((item) => (
                                       <KanbanItem id={item.id} onDrop={async (item, column) => {
                                         this.onDrop(item, column);
@@ -220,7 +220,7 @@ class Kanban extends Component {
                                           <KanbanCard delete={this.deleteTask} id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
                                       </KanbanItem>
                                   ))}
-                                 {column === columns[0] ? <button onClick={async () => {this.setState({modalOpen: true})}}>+</button>: <div></div>}
+                                 {column === columns[0] ? <button className="mx-auto bg-white hover:bg-gray-300 rounded-full px-2 text-blue-800 text-xl" onClick={async () => {this.setState({modalOpen: true})}}><span className="hello"><p>+</p></span></button>: <div></div>}
                                 </div>
                     </KanbanColumn>
                     ))}
@@ -243,7 +243,7 @@ const boxTarget = {
 
   class KanbanColumn extends React.Component {
     render() {
-      return this.props.connectDropTarget(<div class = "h-full w-1/3 rounded-md border-4 border-black bg-opacity-30 bg-blue-500 m-2" >{this.props.children}</div>);
+      return this.props.connectDropTarget(<div class = "h-full w-1/3 rounded-xl bg-white bg-opacity-10 w-1/2 m-2 border border-white min-h-75screen" >{this.props.children}</div>);
     }
   }
 

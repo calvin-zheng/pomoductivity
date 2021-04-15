@@ -30,25 +30,25 @@ function App() {
         <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded" onClick = {() => { firebase.auth().signOut(); setIsSignedIn(false);}}>Sign out</button>
         <Nav />
         <Route
-          path="/stats" 
+          path="/stats"
           render={() => (
             <Stats user={user} />
           )}
         />
          <Route
-          path="/kanban" 
+          path="/kanban"
           render={() => (
-            <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user}/> </div>
+            <Kanban user = {user}/>
           )}
         />
          <Route
-          path="/timer" 
+          path="/timer"
           render={() => (
             <Timer user={user} />
             )}
         />
          <Route
-          path="/groups" 
+          path="/groups"
           render={() => (
             <Groups user={user}/>
           )}

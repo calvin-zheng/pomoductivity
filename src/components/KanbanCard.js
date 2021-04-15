@@ -29,7 +29,7 @@ class KanbanCard extends Component {
     }
 
     render() {
-        return <div key={this.id} class = "rounded-lg mx-auto w-5/6 bg-white bg-opacity-10 ">
+        return <div key={this.id} class = "rounded-lg mx-auto w-5/6 bg-white text-black">
                 <p>{this.props.task}</p>
                 {this.getPriorityText()}
                 <p>{this.props.dueDate}</p>
