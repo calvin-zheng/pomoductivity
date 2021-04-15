@@ -25,9 +25,15 @@ function App() {
     let profileStyle = {"display": "inline-block", "width": "50px", "height": "50px", "border-radius": "50%", "object-fit": "cover", "margin": "10px"};
     return (
       <div className="App text-white">
-        <React.Fragment> Pomoductivity </React.Fragment>
-        <img src={user.photoURL} style={profileStyle}/>
-        <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded" onClick = {() => { firebase.auth().signOut(); setIsSignedIn(false);}}>Sign out</button>
+        <div className="flex justify-end items-center">
+          <img src={user.photoURL} style={profileStyle}/>
+          <button className="mx-2 w-1/8 h-1/2 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded" onClick = {() => { firebase.auth().signOut(); setIsSignedIn(false);}}>Sign out</button>
+          <p style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translate(-50%, 0%)"
+          }} className = "text-white font-extrabold text-5xl p-5">Pomoductivity</p>
+        </div>
         <Nav />
         <Route
           path="/stats" 
@@ -36,7 +42,7 @@ function App() {
           )}
         />
          <Route
-          path="/kanban" 
+          path="/" 
           render={() => (
             <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user}/> </div>
           )}
@@ -59,22 +65,23 @@ function App() {
 
   return (
     <FirebaseAuthProvider {...config} firebase={firebase}>
-      <div>
-        <button
-          onClick={() => {
-            const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(googleAuthProvider);
-          }}
-        >
+      <div className="h-screen w-screen flex justify-center items-center">
+        <div className="text-center">
+          <p className = "text-white font-extrabold text-5xl p-5">Pomoductivity</p>
+          <button className="w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded"
+            onClick={() => {
+              const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+              firebase.auth().signInWithPopup(googleAuthProvider);
+            }}
+          >
           Sign In with Google
         </button>
+        </div>
         <FirebaseAuthConsumer>
           {({ isSignedIn, user, providerId }) => {
             setUser(user);
             return (
-              <pre style={{ height: 300, overflow: "auto" }}>
-                {JSON.stringify({ isSignedIn, user, providerId }, null, 2)}
-              </pre>
+              <React.Fragment></React.Fragment>
             );
           }}
         </FirebaseAuthConsumer>
