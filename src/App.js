@@ -25,16 +25,30 @@ function App() {
     return (
       <div className="App">
         <Nav />
-
         <Route
           path="/stats" 
           render={() => (
             <Stats user={user} />
           )}
         />
-        <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
-        <Timer user={user} />
-        <Groups user={user}/>
+         <Route
+          path="/kanban" 
+          render={() => (
+            <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
+          )}
+        />
+         <Route
+          path="/timer" 
+          render={() => (
+            <Timer user={user} />
+            )}
+        />
+         <Route
+          path="/groups" 
+          render={() => (
+            <Groups user={user}/>
+          )}
+        />
       </div>
     );
   }
