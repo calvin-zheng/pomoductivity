@@ -13,7 +13,7 @@ import {
   IfFirebaseAuthedAnd
 } from "@react-firebase/auth";
   import { config } from "./config.js";
-  import {Route, Link} from 'react-router-dom'
+  import {Route, Redirect} from 'react-router-dom'
   import Nav from "./nav"
 
 
@@ -35,6 +35,9 @@ function App() {
           }} className = "text-white font-extrabold text-5xl p-5">Pomoductivity</p>
         </div>
         <Nav />
+        <Route exact path="/">
+            <Redirect to="/kanban" />
+        </Route>
         <Route
           path="/stats" 
           render={() => (
@@ -42,7 +45,7 @@ function App() {
           )}
         />
          <Route
-          path="/" 
+          path="/kanban" 
           render={() => (
             <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user}/> </div>
           )}
