@@ -16,7 +16,8 @@ const modalStyle = {
     right                 : 'auto',
     bottom                : 'auto',
     marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)'
+    transform             : 'translate(-50%, -50%)',
+    background            : '#4D6EDB'
   }
 };
 
@@ -147,6 +148,9 @@ class Kanban extends Component {
       this.setState(newState);
       this.updateFirebase(this.props.user.uid, newState.columnsToTasks);
       this.closeModal();
+      this.setState({taskName: "",
+                      priority: "0",
+                      date: "",});
       event.preventDefault();
     }
 
@@ -181,6 +185,7 @@ class Kanban extends Component {
     render() {
         const { columns, columnsToTasks } = this.state;
         return (
+          <div className="mt-16">
           <FirebaseDatabaseProvider firebase={firebase} {...config}>
           {this.state.modalOpen ? <Modal
             isOpen={this.modalIsOpen}
@@ -188,23 +193,25 @@ class Kanban extends Component {
             style={modalStyle}
             contentLabel="Add task"
            >
-             <form class = "bg-gray-400 w-2/6 h-1/6">
+             <div>
+             <form class = "space-y-3 p-2 mb-4 text-white">
                   <label>Task name: </label>
-                  <input value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
+                  <input className="rounded-md bg-white bg-opacity-20"  value={this.state.taskName} onChange={this.handleTaskChange}  type="text" id="task" name="task"/> <br/>
                   <label>Priority: </label>
-                  <select id="priority" name="priority" value={this.state.priority} onChange={this.handlePriorityChange} >
+                  <select className="rounded-md bg-white bg-opacity-20"  id="priority" name="priority" value={this.state.priority} onChange={this.handlePriorityChange} >
                     <option value={"0"}>High</option>
                     <option value={"1"}>Medium</option>
                     <option value={"2"}>Low</option>
                   </select>  <br/>
                   <label>Date: </label>
-                  <input type="text" id="date" name="date" value={this.state.date} onChange={this.handleDateChange} /> <br/>
+                  <input className="mb-4 rounded-md bg-white bg-opacity-20" type="text" id="date" name="date" value={this.state.date} onChange={this.handleDateChange} /> <br/>
                 </form>
-                <button onClick={async (event) => {
+                <button className="float-right mx-auto bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded text-sm" onClick={async (event) => {
                 this.addTask(event);
               }}>
                 Add task
               </button>
+              </div>
            </Modal> : <div></div>}
             <div className = "flex h-full w-2/3 mx-auto">
                 <DndProvider backend={HTML5Backend}>
@@ -219,7 +226,7 @@ class Kanban extends Component {
                                           <KanbanCard delete={this.deleteTask} id={item.id} uid={this.props.user.uid} task={item.title} priority={item.priority} dueDate = {item.dueDate}></KanbanCard>
                                       </KanbanItem>
                                   ))}
-                                 {column === columns[0] ? <button className="mx-auto bg-white hover:bg-gray-300 rounded-full px-2 text-blue-800 text-xl" onClick={async () => {this.setState({modalOpen: true})}}><span className="hello"><p>+</p></span></button>: <div></div>}
+                                 {column === columns[0] ? <button className="mx-auto bg-white hover:bg-gray-300 rounded-full px-2 text-blue-800 text-xl" onClick={async () => {this.setState({modalOpen: true})}}><span className="hello"><p>Add task +</p></span></button>: <div></div>}
                                 </div>
                     </KanbanColumn>
                     ))}
@@ -227,6 +234,7 @@ class Kanban extends Component {
               <br/>
             </div>
             </FirebaseDatabaseProvider>
+            </div>
         );
       }
 }
