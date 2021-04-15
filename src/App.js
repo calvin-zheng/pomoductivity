@@ -13,6 +13,9 @@ import {
   IfFirebaseAuthedAnd
 } from "@react-firebase/auth";
   import { config } from "./config.js";
+  import {Route, Link} from 'react-router-dom'
+  import Nav from "./nav"
+
 
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -21,9 +24,16 @@ function App() {
   if (isSignedIn) {
     return (
       <div className="App">
+        <Nav />
+
+        <Route
+          path="/stats" 
+          render={() => (
+            <Stats user={user} />
+          )}
+        />
         <div style={{height: "600px",  width: "1200px", display: "flex"}}> <Kanban user = {user} signOut = {() => { firebase.auth().signOut(); setIsSignedIn(false); console.log("signed out");}} /> </div>
         <Timer user={user} />
-        <Stats user={user}/>
         <Groups user={user}/>
       </div>
     );

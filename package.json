@@ -5,7 +5,7 @@
   "dependencies": {
     "@craco/craco": "^6.1.1",
     "@react-firebase/auth": "^0.2.10",
-    "@react-firebase/database": "^0.3.11",
+    "@react-firebase/database": "^0.2.10",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -20,6 +20,7 @@
     "react-image-gallery": "^1.0.9",
     "react-modal": "^3.13.1",
     "react-photo-collage": "^1.0.7",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "recharts": "^2.0.9",
     "styled-components": "^5.2.3",
