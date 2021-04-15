@@ -18,12 +18,12 @@ class Groups extends Component {
             joinGroupCode: "",
             errorText: "",
         };
-    } 
+    }
 
     createGroupNameChange(event) {
         this.setState({createGroupName: event.target.value});
     }
-    
+
     createGroupCodeChange(event) {
         this.setState({createGroupCode: event.target.value});
     }
@@ -31,45 +31,54 @@ class Groups extends Component {
     joinGroupCodeChange(event) {
         this.setState({joinGroupCode: event.target.value});
     }
-    
+
     createGroup() {
         firebase.database().ref("/groups/" + this.state.createGroupCode).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data !== null) {
+            this.setState({errorText: ""});
+            if(snapshot.exists()) {
                 this.setState({errorText: "Group code already exists"});
                 return;
             }
+            firebase.database().ref("/groups/" + this.state.createGroupCode).push({"id": this.props.user.uid, "pic": this.props.user.photoURL});
+            firebase.database().ref("/users/" + this.props.user.uid).push(this.state.createGroupCode);
         });
-        firebase.database().ref("/groups/" + this.state.createGroupCode).push({"id": this.props.user.uid, "pic": this.props.user.photoURL});
-        
-        // Add group to user database
-        firebase.database().ref("/users/" + this.props.user.uid).push(this.state.createGroupCode);
     }
 
     joinGroup() {
         // Check if group code is valid
         firebase.database().ref("/groups/" + this.state.joinGroupCode).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data === null) {
+            this.setState({errorText: ""});
+            if(!snapshot.exists()) {
                 this.setState({errorText: "Group code invalid, try another code"});
                 return;
             }
-            for(let i; i < data.length; i++) {
-                if (data[i].id == this.props.user.uid) {
-                    this.setState({errorText: "You are already in this group"});
-                    return;
+            snapshot.forEach((child) => {
+                // console.log(child.key, child.val());
+                if(child.val().id === this.props.user.uid){
+                    this.setState({errorText: 'You are already in this' +
+                            ' group!'});
                 }
+            });
+
+            if(this.state.errorText.length === 0){
+                firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
+                firebase.database().ref("/users/" + this.props.user.uid).push(this.state.joinGroupCode);
             }
         });
-        // If yes, join group
-        firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
-        console.log(this.state.joinGroupCode);
 
-        // Add group to user database
-        firebase.database().ref("/users/" + this.props.user.uid).push(this.state.createGroupCode);
+        // console.log(this.state.errorText);
+        // if(this.state.errorText.length !== 0){
+        //     return;
+        // }
+        // // If yes, join group
+        // firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
+        // console.log(this.state.joinGroupCode);
+        //
+        // // Add group to user database
+        // firebase.database().ref("/users/" + this.props.user.uid).push(this.state.joinGroupCode);
 
     }
-    
+
 
     render() {
         const setting = {
@@ -86,7 +95,7 @@ class Groups extends Component {
             ],
             showNumOfRemainingPhotos: true
           };
-           
+
         return <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <p>Create group</p>
             <form class = "bg-gray-400 w-2/6 h-1/6">
@@ -101,7 +110,7 @@ class Groups extends Component {
             </form>
             <button onClick={this.joinGroup}>Join Group</button>
             <p>{this.state.errorText}</p>
-          
+
 
         </FirebaseDatabaseProvider>
     }
