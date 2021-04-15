@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import firebase from "firebase/app";
 import "firebase/database";
 import { config } from "../config.js";
-import { ImageGallery } from 'react-image-gallery';
+import ReactPhotoGrid from "react-photo-grid";
 import { FirebaseDatabaseProvider} from "@react-firebase/database";
 
 class Groups extends Component {
@@ -17,6 +17,7 @@ class Groups extends Component {
             createGroupCode: "",
             joinGroupCode: "",
             errorText: "",
+            images: []
         };
     } 
 
@@ -71,22 +72,23 @@ class Groups extends Component {
     }
     
 
+    getImagesForGroupCode() {
+        let images = [];
+        // Check if group code is valid
+        firebase.database().ref("/groups/" + this.state.joinGroupCode).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data === null) {
+                this.setState({errorText: "Group code invalid, try another code"});
+                return;
+            }
+            for(let i; i < data.length; i++) {
+                images.push(data[i].pic)
+            }
+            this.setState({images: images})
+        });
+    }
+
     render() {
-        const setting = {
-            width: '600px',
-            height: ['250px', '170px'],
-            layout: [1, 4],
-            photos: [
-              { src: 'url/image-1.jpg' },
-              { src: 'url/image-2.jpg' },
-              { src: 'url/image-3.jpg' },
-              { src: 'url/image-4.jpg' },
-              { src: 'url/image-5.jpg' },
-              { src: 'url/image-6.jpg' },
-            ],
-            showNumOfRemainingPhotos: true
-          };
-           
         return <FirebaseDatabaseProvider firebase={firebase} {...config}>
             <p>Create group</p>
             <form class = "bg-gray-400 w-2/6 h-1/6">
@@ -101,8 +103,10 @@ class Groups extends Component {
             </form>
             <button onClick={this.joinGroup}>Join Group</button>
             <p>{this.state.errorText}</p>
-          
-
+            <ReactPhotoGrid
+                onImageClick={this.handleImageClick}
+                data={this.state.images} 
+            />
         </FirebaseDatabaseProvider>
     }
 }
