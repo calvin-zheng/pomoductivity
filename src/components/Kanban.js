@@ -64,6 +64,39 @@ class Kanban extends Component {
         };
     } 
 
+    componentDidMount(){
+      let columns = ["Not started", "In progress", "Completed"]
+        let columnsToTasks = {}
+        for (let i = 0; i < columns.length; i++) {
+          columnsToTasks[columns[i]] = []
+        }
+        firebase.database().ref("/kanban/" + this.props.user.uid).on('value', (snapshot) => {
+          const d = snapshot.val();
+          console.log(d);
+          if(d === null) {
+            return;
+          }
+          let newColumnsToTasks = {};
+          for (let i = 0; i < columns.length; i++) {
+            if (d[columns[i]] != null) {
+              newColumnsToTasks[columns[i]] = d[columns[i]];
+            }
+            else {
+              newColumnsToTasks[columns[i]] = [];
+            }
+          }
+          this.setState({columnsToTasks: newColumnsToTasks})
+        });
+        this.state = {
+          columns: columns,
+          columnsToTasks: columnsToTasks,
+          taskName: "",
+          priority: "0",
+          date: "",
+          modalOpen: false
+        };
+    }
+  
     updateFirebase(uid) {
       firebase.database().ref("/kanban/" + uid).update(this.state.columnsToTasks);
     }
