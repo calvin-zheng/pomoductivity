@@ -23,7 +23,6 @@ const modalStyle = {
 class Kanban extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props.user);
         this.onDrop = this.onDrop.bind(this);
         this.addTask = this.addTask.bind(this);
         this.handleTaskChange = this.handleTaskChange.bind(this);
