@@ -13,11 +13,34 @@ class Groups extends Component {
         this.joinGroupCodeChange = this.joinGroupCodeChange.bind(this);
         this.createGroup = this.createGroup.bind(this);
         this.joinGroup = this.joinGroup.bind(this);
+        this.obtainGroupWeekTotal = this.obtainGroupWeekTotal.bind(this);
         this.state = {
             createGroupCode: "",
             joinGroupCode: "",
             errorText: "",
+            groups: [],
+            groupSum: {}
         };
+    }
+
+    obtainGroupWeekTotal(){
+        let groupSum = {};
+        for(let i = 0; i < this.state.groups.length; i++) {
+            const groupCode = this.state.groups[i];
+            firebase.database().ref("/groups/" + groupCode).on('value', (snapshot) => {
+                let groupTotal = 0;
+                snapshot.forEach((child) => {
+                    const currentId = child.val().id;
+                    firebase.database().ref("/stats/" + currentId).on('value', (snapshot2) => {
+                        for (let j = 0; j < 6; j++) {
+                            groupTotal += snapshot2.val()[j];
+                        }
+                    })
+                });
+                groupSum[groupCode] = groupTotal;
+            })
+        }
+        this.setState({groupSum: groupSum});
     }
 
     createGroupNameChange(event) {
@@ -32,9 +55,26 @@ class Groups extends Component {
         this.setState({joinGroupCode: event.target.value});
     }
 
-    createGroup() {
-        firebase.database().ref("/groups/" + this.state.createGroupCode).on('value', (snapshot) => {
-            this.setState({errorText: ""});
+    componentDidMount(){
+        firebase.database().ref("/users/" + this.props.user.uid).on('value', (snapshot) => {
+            let groups = [];
+            if(snapshot.exists()){
+                snapshot.forEach((child) => {
+                    groups.push(child.val())
+                })
+            }
+            this.setState({groups: groups});
+            this.obtainGroupWeekTotal();
+            console.log(this.state.groupSum);
+        });
+    }
+
+    async createGroup(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({errorText: ""});
+        await firebase.database().ref("/groups/" + this.state.createGroupCode).once('value', (snapshot) => {
+            console.log(this.state);
             if(snapshot.exists()) {
                 this.setState({errorText: "Group code already exists"});
                 return;
@@ -44,10 +84,13 @@ class Groups extends Component {
         });
     }
 
-    joinGroup() {
+
+    async joinGroup(event) {
         // Check if group code is valid
-        firebase.database().ref("/groups/" + this.state.joinGroupCode).on('value', (snapshot) => {
-            this.setState({errorText: ""});
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({errorText: ""});
+        await firebase.database().ref("/groups/" + this.state.joinGroupCode).once('value', (snapshot) => {
             if(!snapshot.exists()) {
                 this.setState({errorText: "Group code invalid, try another code"});
                 return;
@@ -60,22 +103,13 @@ class Groups extends Component {
                 }
             });
 
-            if(this.state.errorText.length === 0){
-                firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
-                firebase.database().ref("/users/" + this.props.user.uid).push(this.state.joinGroupCode);
-            }
-        });
 
-        // console.log(this.state.errorText);
-        // if(this.state.errorText.length !== 0){
-        //     return;
-        // }
-        // // If yes, join group
-        // firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
-        // console.log(this.state.joinGroupCode);
-        //
-        // // Add group to user database
-        // firebase.database().ref("/users/" + this.props.user.uid).push(this.state.joinGroupCode);
+        });
+        if(this.state.errorText.length === 0){
+            firebase.database().ref("/groups/" + this.state.joinGroupCode).push({"pic": this.props.user.photoURL , "id": this.props.user.uid});
+            firebase.database().ref("/users/" + this.props.user.uid).push(this.state.joinGroupCode);
+            this.setState({joinGroupCode: ""});
+        }
 
     }
 
@@ -97,18 +131,22 @@ class Groups extends Component {
           };
 
         return <FirebaseDatabaseProvider firebase={firebase} {...config}>
+            <p>Your groups</p>
+            {this.state.groups.map((group) => {
+               return <div>{group}</div>;
+            })}
             <p>Create group</p>
             <form class = "bg-gray-400 w-2/6 h-1/6">
                   <label>Group code:</label>
                   <input onChange={this.createGroupCodeChange}  type="text" id="task" name="task"/> <br/>
             </form>
-            <button onClick={this.createGroup}>Create Group</button>
+            <button onClick={(event) => this.createGroup(event)}>Create Group</button>
             <p>Join group</p>
             <form class = "bg-gray-400 w-2/6 h-1/6">
                   <label>Group code:</label>
                   <input onChange={this.joinGroupCodeChange}  type="text" id="task" name="task"/> <br/>
             </form>
-            <button onClick={this.joinGroup}>Join Group</button>
+            <button onClick={(event) => this.joinGroup(event)}>Join Group</button>
             <p>{this.state.errorText}</p>
 
 
