@@ -159,7 +159,8 @@ class Groups extends Component {
 
     render() {
         return <FirebaseDatabaseProvider firebase={firebase} {...config}>
-            <div className="flex flex-row mx-auto w-1/2 items-center justify-center space-x-4 mt-16">
+            <p className="mt-16 mb-3">{this.state.errorText}</p>
+            <div className="flex flex-row mx-auto w-1/2 items-center justify-center space-x-4">
                 <div className="group-creation-form space-y-3 border border-white rounded-md p-4">
                     <h1 className="text-2xl font-bold">Create group</h1>
                     <form className = "space-x-3">
@@ -176,8 +177,6 @@ class Groups extends Component {
                     </form>
                     <button className="mx-auto w-1/8 bg-white hover:bg-gray-300 text-blue-800 font-bold py-2 px-4 rounded text-sm" onClick={(event) => this.joinGroup(event)}>Join</button>
                 </div>
-
-                <p>{this.state.errorText}</p>
             </div>
             <h1 className="text-2xl font-bold mt-16">Your groups</h1>
             <div className="grid grid-cols-3 gap-4 w-3/4 mx-auto mt-8">
