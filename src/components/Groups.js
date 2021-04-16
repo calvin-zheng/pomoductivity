@@ -182,8 +182,8 @@ class Groups extends Component {
                                 })}
                             </div>
                             {!this.state.groupSum[group] && <p>0 minutes worked collectively</p>}
-                            {(Math.floor(this.state.groupSum[group]/60) === 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minute worked collectively</p>}
-                            {(Math.floor(this.state.groupSum[group]/60) !== 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minutes worked collectively</p>}
+                            {this.state.groupSum[group] && (Math.floor(this.state.groupSum[group]/60) === 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minute worked collectively</p>}
+                            {this.state.groupSum[group] && (Math.floor(this.state.groupSum[group]/60) !== 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minutes worked collectively</p>}
                         </div>);
                 })}
             </div>
