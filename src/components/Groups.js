@@ -120,7 +120,7 @@ class Groups extends Component {
     }
 
     getImagesForGroupCode(groupCode) {
-        let images = this.state.images;
+        let images = {};
         // Check if group code is valid
         firebase.database().ref("/groups/" + groupCode).once('value', (snapshot) => {
             // const data = snapshot.val();
