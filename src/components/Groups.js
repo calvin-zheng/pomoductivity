@@ -181,6 +181,7 @@ class Groups extends Component {
                                     return <img className="rounded-full h-10 w-10 flex-grow-0" src={image} />
                                 })}
                             </div>
+                            {!this.state.groupSum[group] && <p>0 minutes worked collectively</p>}
                             {(Math.floor(this.state.groupSum[group]/60) === 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minute worked collectively</p>}
                             {(Math.floor(this.state.groupSum[group]/60) !== 1) && <p>{Math.floor(this.state.groupSum[group]/60)} minutes worked collectively</p>}
                         </div>);
