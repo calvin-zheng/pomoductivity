@@ -69,10 +69,9 @@ class Groups extends Component {
             }
             this.setState({groups: groups});
             this.obtainGroupWeekTotal(groups);
+            this.setState({images: {}});
             for(let group of groups){
-                if(!(group in this.getImagesForGroupCode)){
-                    this.getImagesForGroupCode(group)
-                }
+                this.getImagesForGroupCode(group)
             }
         });
     }
