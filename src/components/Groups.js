@@ -34,11 +34,13 @@ class Groups extends Component {
                 snapshot.forEach((child) => {
                     const currentId = child.val().id;
                     firebase.database().ref("/stats/" + currentId).on('value', (snapshot2) => {
-                        for (let j = 0; j < 6; j++) {
-                            groupTotal += snapshot2.val()[j];
+                        if(snapshot2.exists()){
+                            for (let j = 0; j < 6; j++) {
+                                groupTotal += snapshot2.val()[j];
+                            }
+                            groupSum[groupCode] = groupTotal;
+                            this.setState({groupSum: groupSum});
                         }
-                        groupSum[groupCode] = groupTotal;
-                        this.setState({groupSum: groupSum});
                     })
                 });
             })
