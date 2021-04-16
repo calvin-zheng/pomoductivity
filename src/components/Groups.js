@@ -70,7 +70,9 @@ class Groups extends Component {
             this.setState({groups: groups});
             this.obtainGroupWeekTotal(groups);
             for(let group of groups){
-                this.getImagesForGroupCode(group)
+                if(!(group in this.getImagesForGroupCode)){
+                    this.getImagesForGroupCode(group)
+                }
             }
         });
     }
@@ -120,7 +122,7 @@ class Groups extends Component {
     }
 
     getImagesForGroupCode(groupCode) {
-        let images = {};
+        let images = this.state.images;
         // Check if group code is valid
         firebase.database().ref("/groups/" + groupCode).once('value', (snapshot) => {
             // const data = snapshot.val();
