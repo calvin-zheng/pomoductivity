@@ -122,8 +122,8 @@ class Timer extends Component{
     render(){
         return (
             <FirebaseDatabaseProvider firebase={firebase} {...config}>
-
-            <div className="mt-16 rounded-xl bg-white bg-opacity-10 w-1/2 text-white mx-auto flex flex-col space-y-3 p-5">
+            <p className="mx-auto mt-16 mb-3">To keep an accurate count of the time you spent working, please make sure to leave this page open in a tab.</p>
+            <div className="rounded-xl bg-white bg-opacity-10 w-1/2 text-white mx-auto flex flex-col space-y-3 p-5">
                     {!this.state.started && !this.state.break && <div>
                         Let's get started!
                     </div>}

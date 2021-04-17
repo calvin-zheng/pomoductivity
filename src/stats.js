@@ -33,28 +33,14 @@ class Stats extends Component{
         this.setState({data: data});
       }
     });
-    // let dataTesting = [ {name:"Sunday", value: 0},{name:"Monday", value: 0}, {name:"Tuesday", value: 0}, {name:"Wednesday", value: 0}, {name:"Thursday", value: 0}, {name:"Friday", value: 0}, {name:"Saturday", value: 0}]
-    // firebase.database().ref("/stats/" + this.props.user.uid).once('value', (snapshot) => {
-    //   dataTesting = snapshot.val();
-    // });
-    // console.log(datatesting)
-    // var actual = [ {name:"Sunday", value: 0},{name:"Monday", value: 0}, {name:"Tuesday", value: 0}, {name:"Wednesday", value: 0}, {name:"Thursday", value: 0}, {name:"Friday", value: 0}, {name:"Saturday", value: 0}]
-    // var i
-    // for (i = 0; i < actual.length; i++){
-    //   actual[i].value = Math.floor(datatesting[i].value/60);
-    //   console.log(actual[i].value);
-    // }
-    // this.setState({
-    //   testdata: actual
-    // });
-
   }
 
   render(){
     return (
 
       <div className="mt-16">
-        <h1 className="text-2xl font-bold">How Productive You Were This Week</h1>
+        <h1 className="text-2xl font-bold mb-3">How Productive You Were This Week</h1>
+        <p className="w-1/3 mx-auto mb-3">The stats page keeps track of how long you worked through the pomodoro timer. To make sure your work time is tracked, make sure to have the timer open in a tab while working!</p>
         <div className = "rounded-xl bg-white bg-opacity-10 w-1/2 text-white mx-auto p-4">
           <BarChart className="mx-auto" width={730} height={500} data={this.state.data}>
             {/*<CartesianGrid strokeDasharray="3 3" />*/}

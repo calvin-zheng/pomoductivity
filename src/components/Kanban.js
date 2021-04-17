@@ -173,7 +173,7 @@ class Kanban extends Component {
     }
 
     modalIsOpen() {
-      console.log(this.state.modalOpen);
+      // console.log(this.state.modalOpen);
       return this.state.modalOpen;
     }
 

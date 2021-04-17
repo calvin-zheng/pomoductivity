@@ -81,12 +81,12 @@ class Groups extends Component {
         event.stopPropagation();
         this.setState({errorText: ""});
         const reg = /^[A-Za-z\d\s]+$/;
-        if(!reg.test(this.state.createGroupCode)){
+        if(!reg.test(this.state.createGroupCode) || !this.state.createGroupCode.trim().length){
             this.setState({errorText: "Invalid character used"});
             return;
         }
         await firebase.database().ref("/groups/" + this.state.createGroupCode).once('value', (snapshot) => {
-            console.log(this.state);
+            // console.log(this.state);
             if(snapshot.exists()) {
                 this.setState({errorText: "Group code already exists"});
                 return;
@@ -103,7 +103,7 @@ class Groups extends Component {
         event.stopPropagation();
         this.setState({errorText: ""});
         const reg = /^[A-Za-z\d\s]+$/;
-        if(!reg.test(this.state.joinGroupCode)){
+        if(!reg.test(this.state.joinGroupCode) || !this.state.createGroupCode.trim().length){
             this.setState({errorText: "Invalid character used"});
             return;
         }
